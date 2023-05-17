@@ -8,6 +8,7 @@ import sys
 import math
 import re
 import functools
+import os
 
 def escape_html(a):
 	return a.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
@@ -354,7 +355,11 @@ class x86ManParser(object):
 			raise Exception("Can't decode title")
 		
 		title = title_parts[0]
-		path = "%s/%s.html" % (self.outputDir, title.replace("/", "_").replace(" ", ""))
+		dedup_index = 0
+		path = "%s/%s_%d.html" % (self.outputDir, title.replace("/", "_").replace(" ", ""), dedup_index)
+		while os.path.exists(path):
+			dedup_index += 1
+			path = "%s/%s_%d.html" % (self.outputDir, title.replace("/", "_").replace(" ", ""), dedup_index)
 		print("Writing to %s" % path)
 		file_data = self.__output_page(displayable).encode("UTF-8")
 		with open(path, "wb") as fd:
